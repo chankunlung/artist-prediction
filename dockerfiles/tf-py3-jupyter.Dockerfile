@@ -25,7 +25,7 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN python3 --version
 
 RUN pip install --upgrade pip
-RUN pip3 install sklearn opencv-python IPython
+RUN pip install densenet sklearn opencv-python IPython seaborn pandas 
 RUN if [[ "$DOCKER_ENV" = "gpu" ]]; then echo -e "\e[1;31mINSTALLING GPU SUPPORT\e[0;33m"; pip3 install -U tensorflow-gpu==2.0.0-beta1 tb-nightly; fi
 
 WORKDIR /develop
