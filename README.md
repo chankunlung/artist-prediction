@@ -18,9 +18,12 @@ Se tiene overfitting cuando la red neuronal se sobreajusta a los datos de entren
 Debido a la gran cantidad de obras estas no pudieron ser cargadas al mismo tiempo en memoria, por lo que fue necesario procesar las imágenes en batches. Se utilizó ImageDataGenerator de keras para realizar el procesamiento del data augmentation y la separación del dataset en batches.
 Se aplicó a las imágenes una rotación máxima de 20 grados, un estiramiento horizontal y vertical máximo del 20%, volteo horizontal y vertical y un zoom del 50%.
 El tamaño de las imágenes se cambio para que todas poseen la misma forma de 512x512. De esta manera no se aumenta en sobremedida el requerimiento de memoria y tiempo de procesamiento pero se conserva una suficiente resolución para no perder los detalles de las obras.
-Finalmente se utilizó Welford's online algorithm para el cálculo de la media y la varianza para aplicar normalización a las imágenes x restando la media  y dividiendo por la varianza .
+Finalmente se utilizó Welford's online algorithm para el cálculo de la media y la varianza para aplicar normalización a las imágenes x restando la media y dividiendo por la varianza.
+
 ![z normalization](https://github.com/okason97/artist-prediction/blob/master/images/ecuation.png)
+
 Ejemplo de una imagen obtenida utilizando data augmentation:
+
 ![normalized image](https://github.com/okason97/artist-prediction/blob/master/images/data_aug.png)
 
 ## Modelo
@@ -35,6 +38,7 @@ DenseNet funciona mediante la utilizacion de dense blocks. Estos bloques están 
 Cada bloque convolucional está compuesto por una bottleneck layer, formada por una capa convolucional de 1x1 que ayuda a reducir la complejidad de la red, y una función compuesta. La función compuesta está formada por 3 operaciones: batch normalization, ReLU y una capa convolucional de 3x3.
 DenseNet está compuesta por múltiples dense blocks con capas de transición entre estos. Estas capas de transición se encargan de realizar downsampling reduciendo el tamaño de los feature maps. Esta reducción de dimensionalidad es lograda utilizando una capa bottleneck seguida por una capa de average pooling de 2x2. 
 Para volver más compacto el modelo se utiliza un factor de compresión en las capas de transición. De esta forma si el input de una capa de transición es un feature map de tamaño m y usamos un factor de compresión 0<t<1, el output de la capa de transición sera un feature map de tamaño tm.
+
 ![dense](https://github.com/okason97/artist-prediction/blob/master/images/dense.png)
 
 Utilizando este modelo, la red neuronal puede ser menor en tamaño que otros modelos state of the art pero brindando un mejor resultado que otros modelos state of the art. Ser más compacta otorga múltiples beneficios. Una red más compacta ocupa menos memoria pudiendo ser entrenada sin la necesidad de utilizar hardware demasiado caro o servicios en la nube. A su vez este tipo de red permiten mitigar el efecto del vanishing gradiant el cual surge al poseer una red muy profunda donde el entrenamiento afectará en menor medida a las capas del inicio. Esta posible reducción de tamaño es gracias a la reutilización de features a lo largo de la red introducida por la concatenación de inputs.
@@ -43,6 +47,7 @@ Un bloque SE funciona como una operación de 2 pasos: squeeze y excitation.
 El paso squeeze consta de una capa average pooling, con la cual se reducirá la dimensionalidad del feature de entrada a un vector de 1 dimensión de tamaño V, siendo V la cantidad de canales que poseía el feature de entrada.
 Luego se realizará el paso de excitation, el cual capturará las dependencias entre canales en una manera flexible y no mutuamente exclusiva. Esto lo realiza utilizando 2 capas densely connected donde la primera tendrá una función de activación ReLU y la segunda una función de activación sigmoide para evitar la exclusión de canales. El resultado de las capas densely connected será un vector con la escala que se le aplicará a cada canal. Como paso final se multiplicará este vector de escala al feature map de entrada original obteniendo finalmente un output cuyos canales serán pesados según la interdependencia entre estos.
 Se aplicaron SE blocks luego de capa bloque convolucional y de transición.
+
 ![sedense](https://github.com/okason97/artist-prediction/blob/master/images/sedense.png)
 
 ## Función de costo
@@ -64,12 +69,15 @@ Resultados
 El mayor accuracy en test fue alcanzado en el step 106 (modelo A) con un valor de 62.96.
 El modelo con menor loss en test fue alcanzado en el step 68 (modelo B) con accuracy en test de 61.48.
 Matriz de correlación del modelo A:
+
 ![matrixa](https://github.com/okason97/artist-prediction/blob/master/images/modeloa.png)
 
 Matriz de correlación del modelo B:
+
 ![matrixb](https://github.com/okason97/artist-prediction/blob/master/images/modelb.png)
 
 A continuación se presentan gráficos para mostrar la reducción en la pérdida y el aumento de accuracy en entrenamiento y test:
+
 ![acc](https://github.com/okason97/artist-prediction/blob/master/images/acc.png)
 ![loss](https://github.com/okason97/artist-prediction/blob/master/images/loss.png)
 
@@ -79,18 +87,22 @@ Esta gran diferencia en cantidad de obras entre artistas es un problema difícil
 En el modelo A se puede observar como el modelo presenta dificultades distinguiendo entre Eugene Delacroix y Peter Paul Rubens, prediciendo Peter Paul Rubens en lugar de Eugene Delacroix en múltiples ocasiones.
 
 Obra de Eugene Delacroix
+
 ![Delacroix](https://github.com/okason97/artist-prediction/blob/master/images/delacroix.png)
 
 Obra de Peter Paul Rubens
+
 ![Rubens](https://github.com/okason97/artist-prediction/blob/master/images/rubens.png)
 
 Se puede observar que ambos artistas presentan estilos de arte y colores en sus obras similares. Esto junto al hecho de que Eugene Delacroix posee menos obras contribuye a la mala clasificación.
 El modelo B confunde principalmente a las obras de Edvard Munch con las obras de Amedeo Modigliani, prediciendo Amedeo Modigliani en ocasiones donde la obra es de Edvard Munch. En esta ocasión Amedeo Modigliani es quien posee más obras entre ambos.
 
 Obra de Edvard Munch
+
 ![Munch](https://github.com/okason97/artist-prediction/blob/master/images/munch.png)
 
 Obra de Amedeo Modigliani
+
 ![Modigliani](https://github.com/okason97/artist-prediction/blob/master/images/modigliani.png)
 
 Se puede observar que el estilo del arte es similar, esto sumado a la mayor cantidad de ejemplos de Amedeo Modigliani es lo que genera la confusión.
