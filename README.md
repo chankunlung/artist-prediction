@@ -64,7 +64,7 @@ Resultados
 El mayor accuracy en test fue alcanzado en el step 106 (modelo A) con un valor de 62.96.
 El modelo con menor loss en test fue alcanzado en el step 68 (modelo B) con accuracy en test de 61.48.
 Matriz de correlación del modelo A:
-![matrixa](https://github.com/okason97/artist-prediction/blob/master/images/modela.png)
+![matrixa](https://github.com/okason97/artist-prediction/blob/master/images/modeloa.png)
 
 Matriz de correlación del modelo B:
 ![matrixb](https://github.com/okason97/artist-prediction/blob/master/images/modelb.png)
